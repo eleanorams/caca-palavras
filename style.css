@@ -15,7 +15,6 @@ body {
   height: 700px;
   margin: 0 auto;
   padding-top: 20px;
-  /* border-radius: 5%; */
   border: solid rgb(200, 76, 76);
 }
 
@@ -74,4 +73,11 @@ body {
   vertical-align: top;
   margin-top: 20px;
   cursor: pointer;
+}
+
+#centralizar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
 }
