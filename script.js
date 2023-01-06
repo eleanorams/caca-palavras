@@ -1,17 +1,44 @@
 const arrayWords = ["LARANJA", "PERA", "GOIABA", "UVA", "MANGA"];
-let wordSelected = '';
+let wordSelected = "";
 
 const paintCell = (e) => {
   wordSelected += e.target.innerText;
-  e.target.classList.add('selected');
-  const li = document.querySelectorAll('li');
+  e.target.classList.add("selected");
+  const li = document.querySelectorAll("li");
   for (let index = 0; index < li.length; index += 1) {
     if (wordSelected == li[index].innerText) {
-      li[index].style.color = 'palevioletred'
-      wordSelected = '';
+      const selected = document.querySelectorAll(".selected");
+      for (let index2 = 0; index2 < selected.length; index2 += 1) {
+        selected[index2].classList.remove("selected");
+        selected[index2].classList.add("found");
+      }
+      li[index].classList.add("liFound");
+      wordSelected = "";
     }
   }
-}
+  saveGame();
+};
+
+const saveGame = () => {
+  const matriz = document.querySelector(".matriz");
+  localStorage.setItem("matrizKey", matriz.innerHTML);
+
+  const listItens = document.querySelector("ul");
+  localStorage.setItem("listKey", listItens.innerHTML);
+};
+
+const loadGame = () => {
+  const matriz = document.querySelector(".matriz");
+  matriz.innerHTML = localStorage.getItem("matrizKey");
+
+  const listItens = document.querySelector("ul");
+  listItens.innerHTML = localStorage.getItem("listKey");
+
+  const cells = document.querySelectorAll(".cell");
+  for (let index = 0; index < cells.length; index += 1) {
+    cells[index].addEventListener("click", paintCell);
+  }
+};
 
 //gera as linhas e preenche elas com células
 const generateCells = () => {
@@ -19,17 +46,15 @@ const generateCells = () => {
   for (let index = 0; index < 10; index += 1) {
     const line = document.createElement("div");
     line.className = "line";
-    for (let index = 0; index < 10; index += 1) {
+    for (let index1 = 0; index1 < 10; index1 += 1) {
       const cell = document.createElement("div");
       cell.className = "cell";
-      cell.addEventListener('click', paintCell)
+      cell.addEventListener("click", paintCell);
       line.appendChild(cell);
     }
     matriz.appendChild(line);
   }
 };
-generateCells();
-
 
 const addWords = () => {
   //sorteando a linha
@@ -70,19 +95,48 @@ const randomLetters = () => {
 
 //cria lis com as frutas
 const addList = () => {
-  const ul = document.querySelector('ul');
-  for(let index = 0; index < arrayWords.length; index += 1){
-    const li = document.createElement('li');
+  const ul = document.querySelector("ul");
+  for (let index = 0; index < arrayWords.length; index += 1) {
+    const li = document.createElement("li");
     li.innerText = arrayWords[index];
     ul.appendChild(li);
   }
-}
+};
 
-addList();
+const clear = () => {
+  const btnClear = document.querySelector(".btn-clear");
+  btnClear.addEventListener("click", () => {
+    const selected = document.querySelectorAll(".cell");
+    for (let index = 0; index < selected.length; index += 1) {
+      selected[index].classList.remove("selected");
+    }
+    wordSelected = "";
+  });
+};
+clear();
 
-//remove as palavras ja sorteadas, para que nao se repitam;
-for (let index = arrayWords.length; index > 0; index -= 1) {
-  addWords();
-}
+const restart = () => {
+  const btnRestart = document.querySelector(".btn-restart");
+  btnRestart.addEventListener("click", () => {
+    localStorage.clear();
+    document.location.reload();
+  });
+};
 
-randomLetters();
+restart();
+
+const startGame = () => {
+  if (localStorage.getItem("matrizKey")) {
+    loadGame();
+  } else {
+    generateCells();
+    addList();
+    //remove as palavras ja sorteadas, para que nao se repitam;
+    for (let index = arrayWords.length; index > 0; index -= 1) {
+      addWords();
+    }
+    randomLetters();
+  }
+};
+
+startGame();
